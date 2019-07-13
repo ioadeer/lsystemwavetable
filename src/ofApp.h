@@ -22,5 +22,6 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 		Lsystem el;
-
+		ofPolyline pauly;
+		vector <glm::vec3> vecs; 
 };
