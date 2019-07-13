@@ -9,6 +9,7 @@ Lsystem::Lsystem(){
 	distance = 5.0;
 	startPoint = glm::vec3(0.0,0.0, 0.0);
 	position = startPoint;
+	productionLookUpOffset = 0;
 };
 void Lsystem::setup(string _axiom, string _rule, float _startLength, float _theta, float _distance, glm::vec3  _startPoint){
 	
@@ -17,10 +18,10 @@ void Lsystem::setup(string _axiom, string _rule, float _startLength, float _thet
 	rule = _rule;
 	startLength= _startLength;
 	distance = _distance;
-	theta = theta;	
+	theta = _theta;	
 	startPoint = _startPoint;
 	position = startPoint;
-
+	productionLookUpOffset = 0;
 };
 
 void Lsystem::iterate(string & _prod, const string & _rule){
@@ -41,30 +42,22 @@ string Lsystem::getProduction(){
 //void Lsystem::update(Polyline & line){
 //la idea es agarrar un vector de glm main y devolverlo con los puntos y dibujarlo en el main
 void Lsystem::update(vector<glm::vec3> & _vecs){
-	//size_t steps = 3;
-	//cout << "Lsys update" << endl;
 	if(_vecs.size() > production.size()){
-		//cout << "vecs should be bigger than production" << endl;
+		cout << "vecs should be bigger than production" << endl;
 	} else {
-		//for(size_t i = 0; i < production.size() - steps ; i+= steps){
 		position = startPoint;
 		size_t prodLookUp = 0;
-		//cout << "antes del loop" << endl;
-		//cout << _vecs.size() << endl;
 		for(size_t i = 0; i < _vecs.size();){
-			//cout << i << endl;
-			
-			//for(size_t y = 0; y < steps; y++){
-				char p = production[prodLookUp];
+				char p = production[prodLookUp + productionLookUpOffset];
 				prodLookUp++;
-				//cout << p << endl;
 				switch(p){
 				case 'F':
 								{
 								glm::vec3 temp;
 								temp.x = sin(angle) * distance + position.x;
 								temp.y = cos(angle) * distance + position.y;
-								//cout<< temp.x << endl;
+								if(fabs(temp.x) > ofGetWidth()/2) temp.x =0;
+								if(fabs(temp.y) > ofGetHeight()/2) temp.y =0;
 								_vecs[i]= temp;
 								position = temp;
 								i++;
@@ -85,7 +78,11 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 								cout << "invalid" << endl;
 								}
 				}
-			//}
+		}
+		if(production.size()> productionLookUpOffset + prodLookUp){ // o _vec.size() en lugar de prodLookUp
+			productionLookUpOffset++;
+		}else{
+			productionLookUpOffset = 0;
 		}
 	}
 }

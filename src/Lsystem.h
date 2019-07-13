@@ -34,5 +34,6 @@ class Lsystem{
 		int generations;
 		glm::vec3 startPoint;
 		glm::vec3 position;
+		size_t productionLookUpOffset;
 };
 #endif

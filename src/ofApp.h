@@ -24,4 +24,6 @@ class ofApp : public ofBaseApp{
 		Lsystem el;
 		ofPolyline pauly;
 		vector <glm::vec3> vecs; 
+		size_t lineShapeLookUpOffset;
+		size_t lineShapeLookUp;
 };
