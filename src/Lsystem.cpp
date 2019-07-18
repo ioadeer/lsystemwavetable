@@ -45,8 +45,8 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 	if(_vecs.size() > production.size()){
 		cout << "vecs should be bigger than production" << endl;
 	} else {
-		position = startPoint;
-		size_t prodLookUp = 0;
+		//position = startPoint;
+		prodLookUp = 0;
 		for(size_t i = 0; i < _vecs.size();){
 				char p = production[prodLookUp + productionLookUpOffset];
 				prodLookUp++;
@@ -56,8 +56,15 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 								glm::vec3 temp;
 								temp.x = sin(angle) * distance + position.x;
 								temp.y = cos(angle) * distance + position.y;
+								//if(glm::distance(temp, startPoint) < distance){
+								//	temp.x = startPoint.x;
+								//	temp.y = startPoint.y;
+								//} else {
+								//temp.x = sin(angle) * distance + position.x;
+								//temp.y = cos(angle) * distance + position.y;
 								if(fabs(temp.x) > ofGetWidth()/2) temp.x =0;
 								if(fabs(temp.y) > ofGetHeight()/2) temp.y =0;
+								//}
 								_vecs[i]= temp;
 								position = temp;
 								i++;
@@ -79,10 +86,53 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 								}
 				}
 		}
-		if(production.size()> productionLookUpOffset + prodLookUp){ // o _vec.size() en lugar de prodLookUp
+		//angle = theta;
+		//prodLookUp;
+		if(production.size() > productionLookUpOffset + prodLookUp){ // o _vec.size() en lugar de prodLookUp
 			productionLookUpOffset++;
 		}else{
 			productionLookUpOffset = 0;
 		}
 	}
+}
+
+void Lsystem::oneStep(vector<glm::vec3> & _vecs){
+
+	if(prodLookUp < production.size()) {
+		prodLookUp++;
+	} else {
+		prodLookUp = 0;
+	}
+	char p = production[prodLookUp];
+	switch(p){
+		case 'F':
+						{
+						for(size_t i = 0; i < _vecs.size()-1; i++){
+							glm::vec3 temp = _vecs[i+1];
+							_vecs[i] = temp;
+						}
+						glm::vec3 temp;
+						temp.x = sin(angle) * distance + position.x;
+						temp.y = cos(angle) * distance + position.y;
+						if(fabs(temp.x) > ofGetWidth()/2) temp.x =0;
+						if(fabs(temp.y) > ofGetHeight()/2) temp.y =0;
+						_vecs[_vecs.size()-1]= temp;
+						position = temp;
+						break;
+						}
+		case '+':
+						{
+						angle += theta;
+						break;
+						}
+		case '-':
+						{
+						angle -= theta;
+						break;
+						}
+		default:
+						{
+						cout << "invalid" << endl;
+						}
+		}
 }

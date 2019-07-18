@@ -22,8 +22,12 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 		Lsystem el;
+		Lsystem yo;
+		Lsystem ello;
 		ofPolyline pauly;
 		vector <glm::vec3> vecs; 
+		vector <glm::vec3> vecs2; 
+		vector <glm::vec3> vecs3; 
 		size_t lineShapeLookUpOffset;
 		size_t lineShapeLookUp;
 };

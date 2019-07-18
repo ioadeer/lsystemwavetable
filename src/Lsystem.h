@@ -16,9 +16,9 @@ class Lsystem{
 		void iterate(string & _prod, const string &  _rule);
 		string getProduction();
 		void update();
-//		void draw();
 		//void update(ofPolyline & line);
 		void update(vector<glm::vec3> & _vec);
+		void oneStep(vector<glm::vec3> & _vec);
 		
 	private:
 		int steps =0;
@@ -35,5 +35,6 @@ class Lsystem{
 		glm::vec3 startPoint;
 		glm::vec3 position;
 		size_t productionLookUpOffset;
+		size_t prodLookUp;
 };
 #endif
