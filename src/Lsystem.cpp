@@ -27,6 +27,7 @@ void Lsystem::setup(string _axiom, string _rule, float _startLength, float _thet
 void Lsystem::iterate(string & _prod, const string & _rule){
 	generations++;
 	utils::replaceAll(_prod, "F", _rule);
+	//cout << production << endl;
 };
 
 void Lsystem::simulate(int _gen){
@@ -47,8 +48,10 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 	} else {
 		//position = startPoint;
 		prodLookUp = 0;
-		for(size_t i = 0; i < _vecs.size();){
-				char p = production[prodLookUp + productionLookUpOffset];
+		size_t v = 0;
+		for(size_t i = 0; i < production.size();i++){
+				//char p = production[prodLookUp + productionLookUpOffset];
+				char p = production[i];
 				prodLookUp++;
 				switch(p){
 				case 'F':
@@ -65,9 +68,9 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 								if(fabs(temp.x) > ofGetWidth()/2) temp.x =0;
 								if(fabs(temp.y) > ofGetHeight()/2) temp.y =0;
 								//}
-								_vecs[i]= temp;
+								_vecs[v]= temp;
 								position = temp;
-								i++;
+								v++;
 								break;
 								}
 				case '+':
@@ -135,4 +138,14 @@ void Lsystem::oneStep(vector<glm::vec3> & _vecs){
 						cout << "invalid" << endl;
 						}
 		}
+}
+void Lsystem::countSteps(){
+	numberOfSteps =0;
+	for(size_t i =0; i < production.size(); i++){
+		if(production[i] == 'F') numberOfSteps++;
+	}
+}
+int Lsystem::getNumberOfSteps(){
+	countSteps();
+	return numberOfSteps;
 }

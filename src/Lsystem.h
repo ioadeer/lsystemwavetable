@@ -19,6 +19,8 @@ class Lsystem{
 		//void update(ofPolyline & line);
 		void update(vector<glm::vec3> & _vec);
 		void oneStep(vector<glm::vec3> & _vec);
+		void countSteps();
+		int getNumberOfSteps();
 		
 	private:
 		int steps =0;
@@ -36,5 +38,6 @@ class Lsystem{
 		glm::vec3 position;
 		size_t productionLookUpOffset;
 		size_t prodLookUp;
+		int numberOfSteps;
 };
 #endif
