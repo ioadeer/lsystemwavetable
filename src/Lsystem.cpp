@@ -101,7 +101,7 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 
 void Lsystem::oneStep(vector<glm::vec3> & _vecs){
 
-	if(prodLookUp < production.size()) {
+	if(prodLookUp < production.size()-1) {
 		prodLookUp++;
 	} else {
 		prodLookUp = 0;
@@ -132,6 +132,11 @@ void Lsystem::oneStep(vector<glm::vec3> & _vecs){
 						{
 						angle -= theta;
 						break;
+						}
+		case '\0':
+						{
+							cout<< "end of string" << endl;
+							break;
 						}
 		default:
 						{
