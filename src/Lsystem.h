@@ -21,7 +21,8 @@ class Lsystem{
 		void oneStep(vector<glm::vec3> & _vec);
 		void countSteps();
 		int getNumberOfSteps();
-		
+		void nStepsAhead(size_t _n, vector<glm::vec3> & _vecs);
+
 	private:
 		int steps =0;
 		string axiom;

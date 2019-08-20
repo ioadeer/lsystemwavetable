@@ -144,6 +144,61 @@ void Lsystem::oneStep(vector<glm::vec3> & _vecs){
 						}
 		}
 }
+
+void Lsystem::nStepsAhead(size_t _n, vector<glm::vec3> & _vecs){
+  prodLookUp = prodLookUp + _n >= production.size() ? 0 : prodLookUp;
+	if(prodLookUp + _n < production.size()){
+	//if(true){
+		for(size_t i = 0; i < _vecs.size()-_n; i++){
+			glm::vec3 temp = _vecs[i+_n];
+			_vecs[i] = temp;
+		}
+		for(size_t i = 0; i  < _n;){
+			prodLookUp++; //= i;
+  		prodLookUp = prodLookUp + _n >= production.size() ? 0 : prodLookUp;
+			char p = production[prodLookUp];
+			switch(p){
+				case 'F':
+								{
+									glm::vec3 temp;
+									temp.x = sin(angle) * distance + position.x;
+									temp.y = cos(angle) * distance + position.y;
+									if(fabs(temp.x) > ofGetWidth()/2) temp.x =0;
+									if(fabs(temp.y) > ofGetHeight()/2) temp.y =0;
+									_vecs[_vecs.size()-_n+i]= temp;
+									position = temp;
+									//cout << temp << endl;
+									i++;
+									break;
+								}
+				case '+':
+								{
+									angle += theta;
+									break;
+								}
+				case '-':
+								{
+									angle -= theta;
+									break;
+								}
+				case '\0':
+								{
+									cout << "End of string" << endl;
+									cout << prodLookUp << endl;
+									cout << production.size() << endl;
+									break;
+								}
+				default:
+								{
+									cout << "invalid" << endl;
+									cout << prodLookUp << endl;
+									cout << production.size() << endl;
+								}
+			}
+		}
+	}
+}
+
 void Lsystem::countSteps(){
 	numberOfSteps =0;
 	for(size_t i =0; i < production.size(); i++){
