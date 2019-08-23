@@ -4,5 +4,7 @@
 class utils{
 public:
 	static void replaceAll(string & str,const string & from,const string & to);
+	static void normalize(vector<float> & array);
 };
+	
 #endif

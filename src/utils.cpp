@@ -8,3 +8,17 @@ void utils::replaceAll(string & str,const string & from,const string & to){
 		start_pos += to.length();
 	}
 }
+
+void utils::normalize(vector<float> & array){
+	float max = 0;
+	float scale = 0;
+	// find biggest value
+	for(int i = 0; i < array.size(); i++){
+		float temp = abs(array[i]);
+		max = temp > max ? temp : max;
+	}
+	scale = 1 /(float) max;
+	for(int i = 0; i < array.size(); i++){
+		array[i] = array[i] * scale;
+	}
+}

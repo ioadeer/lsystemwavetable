@@ -22,6 +22,8 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		void audioOut(ofSoundBuffer &outBuffer);
+		void exit();
 
 		Lsystem el;
 		Lsystem yo;
@@ -40,4 +42,18 @@ class ofApp : public ofBaseApp{
 		ofRectangle box;
 		ofRectangle box2;
 		glm::vec3 centroid;
+
+		vector <float> waveTableX;
+		vector <float> waveTableY;
+	
+		bool updateWaveTable;	
+
+		std::mutex audioMutex;
+    ofSoundStream soundStream;
+		ofSoundBuffer setBuffer;
+		ofSoundBuffer playBuffer;
+
+		double phase;
+		double phaseInc;
 };
+
