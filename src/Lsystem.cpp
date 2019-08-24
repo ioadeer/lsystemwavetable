@@ -1,38 +1,52 @@
 #include "Lsystem.h"
 
 Lsystem::Lsystem(){
-	axiom = "F";
+	//axiom = "F";
 	rule = "F+F-F";
-	startLength= 5.0;
-	theta = 2.0 * PI / 3.0;
-	angle = 0.0;
-	distance = 5.0;
-	startPoint = glm::vec3(0.0,0.0, 0.0);
-	position = startPoint;
-	productionLookUpOffset = 0;
+	cout << "Rule on creator :" << rule << endl;
+	//startLength= 5.0;
+	//theta = 2.0 * PI / 3.0;
+	//angle = 0.0;
+	//distance = 5.0;
+	//startPoint = glm::vec3(0.0,0.0, 0.0);
+	//position = startPoint;
+	//productionLookUpOffset = 0;
 };
+
+Lsystem::~Lsystem(){ cout << " Class destroyed"<<endl;};
+
 void Lsystem::setup(string _axiom, string _rule, float _startLength, float _theta, float _distance, glm::vec3  _startPoint){
-	
-	axiom = _axiom;
+	this->axiom = _axiom;
 	production = _axiom;
 	rule = _rule;
+	cout << "Rule on setup :" << rule << endl;
 	startLength= _startLength;
 	distance = _distance;
 	theta = _theta;	
 	startPoint = _startPoint;
 	position = startPoint;
 	productionLookUpOffset = 0;
+	generations = 0;
 };
 
+
 void Lsystem::iterate(string & _prod, const string & _rule){
+	//cout << "generations on iterate " << generations << endl;
 	generations++;
 	utils::replaceAll(_prod, "F", _rule);
 	//cout << production << endl;
 };
 
 void Lsystem::simulate(int _gen){
+	//cout << "generations on simulate " <<getAge() << endl;
 	while(getAge() < _gen){
+		//cout << "Before iterate on simulate: " << _gen << endl;
+		//cout << "Production : " << production << endl;
+		//cout << "Rule: " << rule << endl;
 		iterate(production, rule);
+		//cout << "After iterate on simulate: " << _gen << endl;
+		//cout << "Production : " << production << endl;
+		//cout << "Rule: " << rule << endl;
 	}
 };
 
@@ -42,8 +56,14 @@ string Lsystem::getProduction(){
 
 //void Lsystem::update(Polyline & line){
 //la idea es agarrar un vector de glm main y devolverlo con los puntos y dibujarlo en el main
-void Lsystem::update(vector<glm::vec3> & _vecs){
-	if(_vecs.size() > production.size()){
+// update usande vector de glm vecs internos de la clase
+
+void Lsystem::mapProductionToTurtleSteps(){
+	float size = getNumberOfSteps();
+	//lSystemVecs.clear();
+	lSystemVecs.resize(size);
+	cout << "Size of vec :" <<  lSystemVecs.size() << endl;
+	if(lSystemVecs.size() > production.size()){
 		cout << "vecs should be bigger than production" << endl;
 	} else {
 		//position = startPoint;
@@ -68,7 +88,7 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 								if(fabs(temp.x) > ofGetWidth()/2) temp.x =0;
 								if(fabs(temp.y) > ofGetHeight()/2) temp.y =0;
 								//}
-								_vecs[v]= temp;
+								lSystemVecs[v]= temp;
 								position = temp;
 								v++;
 								break;
@@ -80,6 +100,7 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 								}
 				case '-':
 								{
+									//cout << "llego hasta aca" << endl;
 								angle -= theta;
 								break;
 								}
@@ -99,59 +120,14 @@ void Lsystem::update(vector<glm::vec3> & _vecs){
 	}
 }
 
-void Lsystem::oneStep(vector<glm::vec3> & _vecs){
-
-	if(prodLookUp < production.size()-1) {
-		prodLookUp++;
-	} else {
-		prodLookUp = 0;
-	}
-	char p = production[prodLookUp];
-	switch(p){
-		case 'F':
-						{
-						for(size_t i = 0; i < _vecs.size()-1; i++){
-							glm::vec3 temp = _vecs[i+1];
-							_vecs[i] = temp;
-						}
-						glm::vec3 temp;
-						temp.x = sin(angle) * distance + position.x;
-						temp.y = cos(angle) * distance + position.y;
-						if(fabs(temp.x) > ofGetWidth()/2) temp.x =0;
-						if(fabs(temp.y) > ofGetHeight()/2) temp.y =0;
-						_vecs[_vecs.size()-1]= temp;
-						position = temp;
-						break;
-						}
-		case '+':
-						{
-						angle += theta;
-						break;
-						}
-		case '-':
-						{
-						angle -= theta;
-						break;
-						}
-		case '\0':
-						{
-							cout<< "end of string" << endl;
-							break;
-						}
-		default:
-						{
-						cout << "invalid" << endl;
-						}
-		}
-}
-
-void Lsystem::nStepsAhead(size_t _n, vector<glm::vec3> & _vecs){
+// one step ahead con vecs internos
+void Lsystem::nStepsAhead(size_t _n){
   prodLookUp = prodLookUp + _n >= production.size() ? 0 : prodLookUp;
 	if(prodLookUp + _n < production.size()){
 	//if(true){
-		for(size_t i = 0; i < _vecs.size()-_n; i++){
-			glm::vec3 temp = _vecs[i+_n];
-			_vecs[i] = temp;
+		for(size_t i = 0; i < lSystemVecs.size()-_n; i++){
+			glm::vec3 temp = lSystemVecs[i+_n];
+			lSystemVecs[i] = temp;
 		}
 		for(size_t i = 0; i  < _n;){
 			prodLookUp++; //= i;
@@ -165,7 +141,7 @@ void Lsystem::nStepsAhead(size_t _n, vector<glm::vec3> & _vecs){
 									temp.y = cos(angle) * distance + position.y;
 									if(fabs(temp.x) > ofGetWidth()/2) temp.x =0;
 									if(fabs(temp.y) > ofGetHeight()/2) temp.y =0;
-									_vecs[_vecs.size()-_n+i]= temp;
+									lSystemVecs[lSystemVecs.size()-_n+i]= temp;
 									position = temp;
 									//cout << temp << endl;
 									i++;
@@ -208,4 +184,11 @@ void Lsystem::countSteps(){
 int Lsystem::getNumberOfSteps(){
 	countSteps();
 	return numberOfSteps;
+}
+
+void Lsystem::showAllValues(){
+	cout <<"Axiom :"<< this->axiom <<endl;
+	cout <<"Rule:"<< this->production <<endl;
+	cout <<"Theta:"<< this->theta <<endl;
+
 }

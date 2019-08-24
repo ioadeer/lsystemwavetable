@@ -9,19 +9,20 @@ class Lsystem{
 	public:
 		
 		Lsystem();
+		//Lsystem(string _axiom, string _rule, float _startLength, float _theta, float distance, glm::vec3 _startPoint);
+		~Lsystem();
 		void setup(string _axiom, string _rule, float _startLength, float _theta, float distance, glm::vec3 _startPoint);
 		int	getAge(){return generations;};
 		void simulate(int _gen);
 		//string iterate(string & _prod, const string &  _rule);
 		void iterate(string & _prod, const string &  _rule);
 		string getProduction();
-		void update();
-		//void update(ofPolyline & line);
-		void update(vector<glm::vec3> & _vec);
-		void oneStep(vector<glm::vec3> & _vec);
+		void mapProductionToTurtleSteps();
 		void countSteps();
 		int getNumberOfSteps();
-		void nStepsAhead(size_t _n, vector<glm::vec3> & _vecs);
+		void nStepsAhead(size_t _n);
+		vector<glm::vec3> getlSystemVecs(){return lSystemVecs;};
+		void showAllValues(); 
 
 	private:
 		int steps =0;
@@ -40,5 +41,6 @@ class Lsystem{
 		size_t productionLookUpOffset;
 		size_t prodLookUp;
 		int numberOfSteps;
+		vector <glm::vec3> lSystemVecs;
 };
 #endif

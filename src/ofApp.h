@@ -25,9 +25,12 @@ class ofApp : public ofBaseApp{
 		void audioOut(ofSoundBuffer &outBuffer);
 		void exit();
 
-		Lsystem el;
-		Lsystem yo;
-		Lsystem ello;
+		//Lsystem el;
+		//Lsystem yo;
+		//Lsystem ello;
+		
+		Lsystem * elloPtr;
+		
 		ofPolyline pauly;
 		ofPolyline sonny;
 		ofPolyline vinnie;
@@ -36,6 +39,8 @@ class ofApp : public ofBaseApp{
 		vector <glm::vec3> vecs; 
 		vector <glm::vec3> vecs2; 
 		vector <glm::vec3> vecs3; 
+
+		vector <glm::vec3>  * vecs3Ptr; 
 		size_t lineShapeLookUpOffset;
 		size_t lineShapeLookUp;
 		vector <float> xNormalizedContent;
@@ -46,7 +51,12 @@ class ofApp : public ofBaseApp{
 		vector <float> waveTableX;
 		vector <float> waveTableY;
 	
+		vector <float> * waveTableXPtr;
+		vector <float> * waveTableYPtr;
+
 		bool updateWaveTable;	
+		bool createNewLSystem;
+		string globalRule;
 
 		std::mutex audioMutex;
     ofSoundStream soundStream;
@@ -55,5 +65,6 @@ class ofApp : public ofBaseApp{
 
 		double phase;
 		double phaseInc;
+		//glm::vec3 strt;
 };
 

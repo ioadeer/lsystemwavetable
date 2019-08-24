@@ -5,38 +5,32 @@ void ofApp::setup(){
 	phase = 0;
  	phaseInc = 0.15;	
 	glm::vec3 strt(0.0,0.0,-1.0);
+
 	glm::vec3 strt2(-150.0,-150.0,-1.0);
-	//el.setup("F", "F+F-F+F", 25.0, 0.5 * PI/2.0, 25.0, strt); //era PI el 50.0 era 25.0
-	//yo.setup("F", "F+F-F+F", 15.0, 0.25 * PI/2.0, 15.0, strt); //era PI el 50.0 era 25.0 r: F+F-F+F+F
-	//ello.setup("F", "F+F-F+F", 35.0, 0.25 * PI/2.0, 35.0, strt); //era PI el 50.0 era 25.0 F+F-F+F
-	//ello.setup("F", "F+F-F+F", 25.0, 0.5 * PI/2.0, 25.0, strt); //era PI el 50.0 era 25.0 F+F-F+F
-	ello.setup("F", "-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt); //era PI el 50.0 era 25.0 F+F-F+F
-	
-	//cout << el.getProduction() << endl;
-	//el.simulate(5);
-	//yo.simulate(5); //era 3
-	ello.simulate(9);
-	vecs3.resize(ello.getNumberOfSteps());
-	waveTableX.resize(ello.getNumberOfSteps());
-	waveTableY.resize(ello.getNumberOfSteps());
-	cout << ello.getNumberOfSteps() << endl;
+	elloPtr = new Lsystem();
+
+	elloPtr->setup("F", "-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt); //era PI el 50.0 era 25.0 F+F-F+F
+	//cout << "llego hasta aca" << endl;
+	elloPtr->showAllValues();
+	elloPtr->simulate(9);	
+	elloPtr->showAllValues();
+	elloPtr->mapProductionToTurtleSteps();
+	waveTableX.resize(elloPtr->getNumberOfSteps());
+	waveTableY.resize(elloPtr->getNumberOfSteps());
+	cout << (*elloPtr).getNumberOfSteps() << endl;
 
 	ofBackground(0,0,0);
 	ofSetFrameRate(30);
-	//el.update(vecs);
-	//yo.update(vecs2);
-	ello.update(vecs3);
 	lineShapeLookUpOffset = 1 ;
 	lineShapeLookUp = 35;
 
-	for(size_t i = 0 ; i < vecs3.size(); i++){
-		vinnie.addVertex(vecs3[i].x,vecs3[i].y,vecs3[i].z); //xNormalizedContent[i] = ofMap(vecs2[i].x, -ofGetWidth()/2, ofGetWidth()/2, -1,1);
-		//cout<< xNormalizedContent[i] << endl;
-		//waveTableX[i] = ofClamp(vecs3[i].x, -0.9, 0.9);	
+	for(size_t i = 0 ; i < elloPtr->getlSystemVecs().size(); i++){
+		glm::vec3 temp = elloPtr->getlSystemVecs()[i];
+		vinnie.addVertex(temp.x,temp.y,temp.z);
 	}	
 
 	updateWaveTable = false;
-
+	createNewLSystem = false;
 	ofSoundStreamSettings settings;
   settings.numOutputChannels = 2;
   settings.sampleRate = 48000; // antes estaba en 44100
@@ -50,29 +44,55 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
-	unique_lock<mutex> lock(audioMutex);
 
-	ello.nStepsAhead(1,vecs3);
-	vinnie.clear();
-	//vinniex.clear();
-	//vinniey.clear();
-	for(int i = 0; i < vecs3.size(); i++){
-			//vecs3[i].z-= 1.5;
-			//vecs3[i].z-= 2.5;
-			//vinnie.addVertex(vecs3[i].x,vecs3[i].y,vecs3[i].z);
-			vinnie.curveTo(vecs3[i].x,vecs3[i].y,vecs3[i].z);
-			//vinniey.curveTo(vecs3[i].x,ofMap(i,0,vecs3.size(),-ofGetHeight()/2,ofGetHeight()/2),0);
-			//vinniex.curveTo(ofMap(i,0,vecs3.size(),-ofGetWidth()/2,ofGetWidth()/2), vecs3[i].y, 0);
+	if(createNewLSystem){
+		delete elloPtr;
+		float tempRand = ofRandom(1);	
+		if(tempRand < 0.25) { globalRule = "F+F-F+F";}
+		else if(tempRand > 0.25 && tempRand < 0.50) { globalRule = "F+F-F+F";}
+		else if(tempRand > 0.50 && tempRand < 0.75) { globalRule = "-F+F";}
+		else if(tempRand > 0.75) { globalRule = "-F-F-F+F";}
+		glm::vec3 strt(0.0,0.0,-1.0);
+		elloPtr = new Lsystem(); //"F", "-F-F-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt);
+		//cout << globalRule << endl;
+		elloPtr->setup("F", globalRule, 35.0, 1.0 * PI/2.0, 35.0, strt);
+		//elloPtr->setup("F", "-F-F-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt);
+		int randomSimulateValue = 3 + (int) ofRandom(4);
+		//elloPtr->simulate(3);	
+		elloPtr->simulate(randomSimulateValue);	
+		elloPtr->mapProductionToTurtleSteps();
+		elloPtr->showAllValues();
+		waveTableX.clear();
+		waveTableX.resize(elloPtr->getNumberOfSteps());
+		waveTableY.clear();
+		waveTableY.resize(elloPtr->getNumberOfSteps());
+		cout << (*elloPtr).getNumberOfSteps() << endl;
+		createNewLSystem = false;
 	}
+
+
+	unique_lock<mutex> lock(audioMutex);
+	//ello.nStepsAhead(1,vecs3);
+	elloPtr->nStepsAhead(1);
+	vinnie.clear();
+	//vinniey.clear();
 	
+	for(size_t i = 0 ; i < elloPtr->getlSystemVecs().size(); i++){
+		glm::vec3 temp = elloPtr->getlSystemVecs()[i];
+		//cout << "Temp: " << temp << endl;
+		vinnie.curveTo(temp.x,temp.y,temp.z);
+	}	
+
 	if(updateWaveTable){
 		vinniey.clear();
 		vinniex.clear();
-		for(int i = 0; i < vecs3.size(); i++){
-			waveTableX[i] = vecs3[i].x;	
-			waveTableY[i] = vecs3[i].y;
-			vinniey.curveTo(vecs3[i].x,ofMap(i,0,vecs3.size(),-ofGetHeight()/2,ofGetHeight()/2),0);
-			vinniex.curveTo(ofMap(i,0,vecs3.size(),-ofGetWidth()/2,ofGetWidth()/2), vecs3[i].y, 0);
+		int tempSize =elloPtr->getlSystemVecs().size();
+		for(int i = 0; i < tempSize; i++){
+			glm::vec3 temp = elloPtr->getlSystemVecs()[i];
+			waveTableX[i] = temp.x;	
+			waveTableY[i] = temp.y;
+			vinniey.curveTo(temp.x,ofMap(i,0,tempSize,-ofGetHeight()/2,ofGetHeight()/2),0);
+			vinniex.curveTo(ofMap(i,0,tempSize,-ofGetWidth()/2,ofGetWidth()/2), temp.y, 0);
 		}
 		utils::normalize(waveTableX);
 		utils::normalize(waveTableY);
@@ -123,8 +143,11 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	if(key == 'r'){
+	if(key == 'a'){
 		updateWaveTable = true;
+	}
+	if(key == 'r'){
+		createNewLSystem = true;
 	}
 	else{
 		cout << "Press r tu update wavetable " << endl;
