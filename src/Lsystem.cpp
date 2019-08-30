@@ -3,7 +3,7 @@
 Lsystem::Lsystem(){
 	//axiom = "F";
 	rule = "F+F-F";
-	cout << "Rule on creator :" << rule << endl;
+	//cout << "Rule on creator :" << rule << endl;
 	//startLength= 5.0;
 	//theta = 2.0 * PI / 3.0;
 	//angle = 0.0;
@@ -19,7 +19,7 @@ void Lsystem::setup(string _axiom, string _rule, float _startLength, float _thet
 	this->axiom = _axiom;
 	production = _axiom;
 	rule = _rule;
-	cout << "Rule on setup :" << rule << endl;
+	//cout << "Rule on setup :" << rule << endl;
 	startLength= _startLength;
 	distance = _distance;
 	theta = _theta;	
@@ -191,4 +191,18 @@ void Lsystem::showAllValues(){
 	cout <<"Rule:"<< this->production <<endl;
 	cout <<"Theta:"<< this->theta <<endl;
 
+}
+
+string Lsystem::toString(){
+	string output;
+	output.append("L-system");
+	string axiomString = "\nAxiom " + axiom;
+	string ruleString = "\nRule " + rule;
+	string thetaString = "\nTheta " + to_string(theta);
+	string numberStepsString = "\nNumber of steps :" + to_string(numberOfSteps);
+	output.append(axiomString);
+	output.append(ruleString);
+	output.append(thetaString);
+	output.append(numberStepsString);
+	return output;
 }

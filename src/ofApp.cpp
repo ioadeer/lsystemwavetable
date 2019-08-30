@@ -11,13 +11,14 @@ void ofApp::setup(){
 
 	elloPtr->setup("F", "-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt); //era PI el 50.0 era 25.0 F+F-F+F
 	//cout << "llego hasta aca" << endl;
-	elloPtr->showAllValues();
+	//elloPtr->showAllValues();
 	elloPtr->simulate(9);	
-	elloPtr->showAllValues();
+	//elloPtr->showAllValues();
 	elloPtr->mapProductionToTurtleSteps();
 	waveTableX.resize(elloPtr->getNumberOfSteps());
 	waveTableY.resize(elloPtr->getNumberOfSteps());
-	cout << (*elloPtr).getNumberOfSteps() << endl;
+
+	//cout << (*elloPtr).getNumberOfSteps() << endl;
 
 	ofBackground(0,0,0);
 	ofSetFrameRate(30);
@@ -55,25 +56,26 @@ void ofApp::update(){
 		glm::vec3 strt(0.0,0.0,-1.0);
 		elloPtr = new Lsystem(); //"F", "-F-F-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt);
 		//cout << globalRule << endl;
-		elloPtr->setup("F", globalRule, 35.0, 1.0 * PI/2.0, 35.0, strt);
+		elloPtr->setup("F", globalRule, 35.0, ofRandom(2)* 1.0 * PI/2.0, 35.0, strt); // agregue angulo random
 		//elloPtr->setup("F", "-F-F-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt);
 		int randomSimulateValue = 3 + (int) ofRandom(4);
 		//elloPtr->simulate(3);	
 		elloPtr->simulate(randomSimulateValue);	
 		elloPtr->mapProductionToTurtleSteps();
-		elloPtr->showAllValues();
+		//elloPtr->showAllValues();
 		waveTableX.clear();
 		waveTableX.resize(elloPtr->getNumberOfSteps());
 		waveTableY.clear();
 		waveTableY.resize(elloPtr->getNumberOfSteps());
-		cout << (*elloPtr).getNumberOfSteps() << endl;
+		//cout << (*elloPtr).getNumberOfSteps() << endl;
+		output = elloPtr->toString();
 		createNewLSystem = false;
 	}
 
 
 	unique_lock<mutex> lock(audioMutex);
 	//ello.nStepsAhead(1,vecs3);
-	elloPtr->nStepsAhead(1);
+	elloPtr->nStepsAhead(8); // no puede exceder el tamanio de una produccion
 	vinnie.clear();
 	//vinniey.clear();
 	
@@ -139,6 +141,9 @@ void ofApp::draw(){
 	ofScale(0.5,0.5,1);
 	vinnie.draw();
 	ofPopMatrix();
+	
+	ofDrawBitmapString(output, ofGetWidth()/2 -200,ofGetHeight()/2 - 80);
+
 }
 
 //--------------------------------------------------------------
@@ -212,9 +217,12 @@ void ofApp::audioOut(ofSoundBuffer &outBuffer){
 		float currentSampleX;
 		float currentSampleY;
 		phase += phaseInc;
-		if(phase >= waveTableX.size()){phase = 0;}
-		currentSampleX = waveTableX[int(phase)];
-		currentSampleY = waveTableY[int(phase)];
+		if(phase >= waveTableX.size()-1){phase = 0;}
+		//currentSampleX = waveTableX[int(phase)];
+		//currentSampleY = waveTableY[int(phase)];
+		//linear interpolation
+		currentSampleX = linearInterp(waveTableX[int(phase)],waveTableX[int(phase+1)],phase);
+		currentSampleY = linearInterp(waveTableY[int(phase)],waveTableY[int(phase+1)],phase);
 		outBuffer.getSample(i,0) = currentSampleX;	
 		outBuffer.getSample(i,1) = currentSampleY;	
 	}

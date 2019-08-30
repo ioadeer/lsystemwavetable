@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "Lsystem.h"
+#include "audioTools.h"
 
 #define tableSize 2048;
 
@@ -57,6 +58,7 @@ class ofApp : public ofBaseApp{
 		bool updateWaveTable;	
 		bool createNewLSystem;
 		string globalRule;
+		string output;
 
 		std::mutex audioMutex;
     ofSoundStream soundStream;

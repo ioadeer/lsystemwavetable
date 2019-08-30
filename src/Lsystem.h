@@ -23,6 +23,7 @@ class Lsystem{
 		void nStepsAhead(size_t _n);
 		vector<glm::vec3> getlSystemVecs(){return lSystemVecs;};
 		void showAllValues(); 
+		string toString();
 
 	private:
 		int steps =0;
