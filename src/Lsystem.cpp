@@ -27,6 +27,7 @@ void Lsystem::setup(string _axiom, string _rule, float _startLength, float _thet
 	position = startPoint;
 	productionLookUpOffset = 0;
 	generations = 0;
+	numberOfIterations = 0;
 };
 
 
@@ -38,6 +39,7 @@ void Lsystem::iterate(string & _prod, const string & _rule){
 };
 
 void Lsystem::simulate(int _gen){
+	numberOfIterations = _gen;
 	//cout << "generations on simulate " <<getAge() << endl;
 	while(getAge() < _gen){
 		//cout << "Before iterate on simulate: " << _gen << endl;
@@ -199,10 +201,14 @@ string Lsystem::toString(){
 	string axiomString = "\nAxiom " + axiom;
 	string ruleString = "\nRule " + rule;
 	string thetaString = "\nTheta " + to_string(theta);
-	string numberStepsString = "\nNumber of steps :" + to_string(numberOfSteps);
+	string numberStepsString = "\nNumber of steps : " + to_string(numberOfSteps);
+	string distanceString = "\nDistance : " + to_string(distance);
+	string numberOfIterationsString = "\nNumber of iterations : " + to_string(numberOfIterations);
 	output.append(axiomString);
 	output.append(ruleString);
 	output.append(thetaString);
+	output.append(numberOfIterationsString);
 	output.append(numberStepsString);
+	output.append(distanceString);
 	return output;
 }

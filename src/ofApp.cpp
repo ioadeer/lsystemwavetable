@@ -10,15 +10,14 @@ void ofApp::setup(){
 	elloPtr = new Lsystem();
 
 	elloPtr->setup("F", "-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt); //era PI el 50.0 era 25.0 F+F-F+F
-	//cout << "llego hasta aca" << endl;
-	//elloPtr->showAllValues();
 	elloPtr->simulate(9);	
-	//elloPtr->showAllValues();
 	elloPtr->mapProductionToTurtleSteps();
+	output = elloPtr->toString();
 	waveTableX.resize(elloPtr->getNumberOfSteps());
 	waveTableY.resize(elloPtr->getNumberOfSteps());
 
-	//cout << (*elloPtr).getNumberOfSteps() << endl;
+	waveTableXPlay = waveTableX;
+	waveTableYPlay = waveTableY;
 
 	ofBackground(0,0,0);
 	ofSetFrameRate(30);
@@ -35,7 +34,7 @@ void ofApp::setup(){
 	ofSoundStreamSettings settings;
   settings.numOutputChannels = 2;
   settings.sampleRate = 48000; // antes estaba en 44100
-  settings.bufferSize = 512;
+  settings.bufferSize = BUFFER_SIZE;
   settings.numBuffers = 3; // antes estaba en 4
   settings.setOutListener(this);
   soundStream.setup(settings);
@@ -45,8 +44,10 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
+	//unique_lock<mutex> lock(audioMutex);
 
 	if(createNewLSystem){
+		//unique_lock<mutex> lock(audioMutex);
 		delete elloPtr;
 		float tempRand = ofRandom(1);	
 		if(tempRand < 0.25) { globalRule = "F+F-F+F";}
@@ -55,55 +56,69 @@ void ofApp::update(){
 		else if(tempRand > 0.75) { globalRule = "-F-F-F+F";}
 		glm::vec3 strt(0.0,0.0,-1.0);
 		elloPtr = new Lsystem(); //"F", "-F-F-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt);
-		//cout << globalRule << endl;
-		elloPtr->setup("F", globalRule, 35.0, ofRandom(2)* 1.0 * PI/2.0, 35.0, strt); // agregue angulo random
+		float randomDistance = ofRandom(20.0) + 15.0;
+		elloPtr->setup("F", globalRule, randomDistance, ofRandom(2)* 1.0 * PI/2.0, randomDistance, strt); // agregue angulo random
+		//elloPtr->setup("F", globalRule, 35.0, ofRandom(2)* 1.0 * PI/2.0, 35.0, strt); // agregue angulo random
 		//elloPtr->setup("F", "-F-F-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt);
 		int randomSimulateValue = 3 + (int) ofRandom(4);
-		//elloPtr->simulate(3);	
 		elloPtr->simulate(randomSimulateValue);	
 		elloPtr->mapProductionToTurtleSteps();
-		//elloPtr->showAllValues();
+		int tempStepsNumber = elloPtr->getNumberOfSteps();
+		int tempResize = tempStepsNumber <= MAX_TABOSC_SIZE ? tempStepsNumber : MAX_TABOSC_SIZE;
+		cout << tempResize << endl;
 		waveTableX.clear();
-		waveTableX.resize(elloPtr->getNumberOfSteps());
+		waveTableX.resize(tempResize);
 		waveTableY.clear();
-		waveTableY.resize(elloPtr->getNumberOfSteps());
-		//cout << (*elloPtr).getNumberOfSteps() << endl;
+		waveTableY.resize(tempResize);
 		output = elloPtr->toString();
 		createNewLSystem = false;
 	}
 
 
-	unique_lock<mutex> lock(audioMutex);
 	//ello.nStepsAhead(1,vecs3);
-	elloPtr->nStepsAhead(8); // no puede exceder el tamanio de una produccion
+	elloPtr->nStepsAhead(3); // no puede exceder el tamanio de una produccion
 	vinnie.clear();
 	//vinniey.clear();
 	
 	for(size_t i = 0 ; i < elloPtr->getlSystemVecs().size(); i++){
 		glm::vec3 temp = elloPtr->getlSystemVecs()[i];
-		//cout << "Temp: " << temp << endl;
 		vinnie.curveTo(temp.x,temp.y,temp.z);
 	}	
 
 	if(updateWaveTable){
+
+
 		vinniey.clear();
 		vinniex.clear();
 		int tempSize =elloPtr->getlSystemVecs().size();
-		for(int i = 0; i < tempSize; i++){
-			glm::vec3 temp = elloPtr->getlSystemVecs()[i];
-			waveTableX[i] = temp.x;	
-			waveTableY[i] = temp.y;
-			vinniey.curveTo(temp.x,ofMap(i,0,tempSize,-ofGetHeight()/2,ofGetHeight()/2),0);
-			vinniex.curveTo(ofMap(i,0,tempSize,-ofGetWidth()/2,ofGetWidth()/2), temp.y, 0);
+		if(tempSize <= MAX_TABOSC_SIZE){
+			for(int i = 0; i < tempSize; i++){
+				glm::vec3 temp = elloPtr->getlSystemVecs()[i];
+				waveTableX[i] = temp.x;	
+				waveTableY[i] = temp.y;
+				vinniey.curveTo(temp.x,ofMap(i,0,tempSize,-ofGetHeight()/2,ofGetHeight()/2),0);
+				vinniex.curveTo(ofMap(i,0,tempSize,-ofGetWidth()/2,ofGetWidth()/2), temp.y, 0);
+			}
+		} else {
+			for(int i = 0; i < tempSize; i++){
+				glm::vec3 temp = elloPtr->getlSystemVecs()[i];
+				vinniey.curveTo(temp.x,ofMap(i,0,tempSize,-ofGetHeight()/2,ofGetHeight()/2),0);
+				vinniex.curveTo(ofMap(i,0,tempSize,-ofGetWidth()/2,ofGetWidth()/2), temp.y, 0);
+			}
+			for(int i = 0; i < MAX_TABOSC_SIZE; i++){
+				glm::vec3 temp = elloPtr->getlSystemVecs()[i];
+				waveTableX[i] = temp.x;	
+				waveTableY[i] = temp.y;
+			}
 		}
 		utils::normalize(waveTableX);
 		utils::normalize(waveTableY);
-	//	for(size_t i = 0; i < setBuffer.getNumFrames(); i++){
-	//		setBuffer.getSample(i, 0) = waveTableX[i];		
-	//	}
-		//for(int i = 0; i < vecs3.size(); i++){
-		//	cout << waveTableX[i] << endl;
-		//}
+
+		unique_lock<mutex> lock(audioMutex);
+
+		waveTableXPlay = waveTableX;
+		waveTableYPlay = waveTableY;
+
 		updateWaveTable = false;
 	}
  	
@@ -142,7 +157,7 @@ void ofApp::draw(){
 	vinnie.draw();
 	ofPopMatrix();
 	
-	ofDrawBitmapString(output, ofGetWidth()/2 -200,ofGetHeight()/2 - 80);
+	ofDrawBitmapString(output, ofGetWidth()/2 -200,ofGetHeight()/2 - 100);
 
 }
 
@@ -211,8 +226,9 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 void ofApp::audioOut(ofSoundBuffer &outBuffer){
 
-	unique_lock<mutex> lock(audioMutex);
+	//unique_lock<mutex> lock(audioMutex);
 
+	unique_lock<mutex> lock(audioMutex);
 	for(size_t i = 0; i < outBuffer.getNumFrames(); i++){
 		float currentSampleX;
 		float currentSampleY;
@@ -221,11 +237,13 @@ void ofApp::audioOut(ofSoundBuffer &outBuffer){
 		//currentSampleX = waveTableX[int(phase)];
 		//currentSampleY = waveTableY[int(phase)];
 		//linear interpolation
-		currentSampleX = linearInterp(waveTableX[int(phase)],waveTableX[int(phase+1)],phase);
-		currentSampleY = linearInterp(waveTableY[int(phase)],waveTableY[int(phase+1)],phase);
+		currentSampleX = linearInterp(waveTableXPlay[int(phase)],waveTableXPlay[int(phase+1)],phase);
+		currentSampleY = linearInterp(waveTableYPlay[int(phase)],waveTableYPlay[int(phase+1)],phase);
 		outBuffer.getSample(i,0) = currentSampleX;	
 		outBuffer.getSample(i,1) = currentSampleY;	
 	}
+	//waveTableXPlay = waveTableX;
+	//waveTableYPlay = waveTableY;
 }
 
 void ofApp::exit(){

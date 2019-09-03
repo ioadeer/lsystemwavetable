@@ -17,7 +17,7 @@ void utils::normalize(vector<float> & array){
 		float temp = abs(array[i]);
 		max = temp > max ? temp : max;
 	}
-	scale = 1 /(float) max;
+	scale = 0.5 /(float) max;
 	for(int i = 0; i < array.size(); i++){
 		array[i] = array[i] * scale;
 	}

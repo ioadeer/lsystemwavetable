@@ -43,5 +43,6 @@ class Lsystem{
 		size_t prodLookUp;
 		int numberOfSteps;
 		vector <glm::vec3> lSystemVecs;
+		int numberOfIterations;
 };
 #endif

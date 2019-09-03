@@ -4,7 +4,8 @@
 #include "Lsystem.h"
 #include "audioTools.h"
 
-#define tableSize 2048;
+#define MAX_TABOSC_SIZE 2048
+#define BUFFER_SIZE 512
 
 class ofApp : public ofBaseApp{
 	public:
@@ -52,6 +53,9 @@ class ofApp : public ofBaseApp{
 		vector <float> waveTableX;
 		vector <float> waveTableY;
 	
+		vector <float> waveTableXPlay;
+		vector <float> waveTableYPlay;
+
 		vector <float> * waveTableXPtr;
 		vector <float> * waveTableYPtr;
 
