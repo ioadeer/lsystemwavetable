@@ -4,7 +4,7 @@
 #include "Lsystem.h"
 #include "audioTools.h"
 
-#define MAX_TABOSC_SIZE 2048
+#define MAX_TABOSC_SIZE 4096 
 #define BUFFER_SIZE 512
 
 class ofApp : public ofBaseApp{
