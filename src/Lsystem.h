@@ -6,12 +6,20 @@
 
 class Lsystem{
 
+	struct Genome{
+		string genAxiom;
+		string genRule;
+		float genDistance;
+		float genTheta;
+		int genNumberOfSteps;
+		int genNumberOfIterations;
+	};
+
 	public:
 		
 		Lsystem();
-		//Lsystem(string _axiom, string _rule, float _startLength, float _theta, float distance, glm::vec3 _startPoint);
 		~Lsystem();
-		void setup(string _axiom, string _rule, float _startLength, float _theta, float distance, glm::vec3 _startPoint);
+		void setup(string _axiom, string _rule, float _startLength, float _theta, float distance, glm::vec3 _startPoint, int _numberOfIterations);
 		int	getAge(){return generations;};
 		void simulate(int _gen);
 		//string iterate(string & _prod, const string &  _rule);
@@ -24,6 +32,11 @@ class Lsystem{
 		vector<glm::vec3> getlSystemVecs(){return lSystemVecs;};
 		void showAllValues(); 
 		string toString();
+
+		void lSysToGenome(Genome &_genome);
+		void lSysActualStateToGenome();
+		string genomeToString(Genome _genome);
+		string lSysActualStateToString();
 
 	private:
 		int steps =0;
@@ -44,5 +57,9 @@ class Lsystem{
 		int numberOfSteps;
 		vector <glm::vec3> lSystemVecs;
 		int numberOfIterations;
+
+		Genome previousState;
+		Genome actualState;
+
 };
 #endif

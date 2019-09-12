@@ -63,6 +63,7 @@ class ofApp : public ofBaseApp{
 		bool createNewLSystem;
 		string globalRule;
 		string output;
+		string genomeOutput;
 
 		std::mutex audioMutex;
     ofSoundStream soundStream;
