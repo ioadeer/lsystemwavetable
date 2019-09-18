@@ -11,7 +11,7 @@ void ofApp::setup(){
 
 	elloPtr->setup("F", "-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt, 9); //era PI el 50.0 era 25.0 F+F-F+F
 	//elloPtr->simulate(9);	
-	elloPtr->mapProductionToTurtleSteps();
+	//elloPtr->mapProductionToTurtleSteps();
 	output = elloPtr->toString();
 	waveTableX.resize(elloPtr->getNumberOfSteps());
 	waveTableY.resize(elloPtr->getNumberOfSteps());
@@ -31,6 +31,9 @@ void ofApp::setup(){
 
 	updateWaveTable = false;
 	createNewLSystem = false;
+	createLSystemFromGenome = false;
+	saveGenome = false;
+
 	ofSoundStreamSettings settings;
   settings.numOutputChannels = 2;
   settings.sampleRate = 48000; // antes estaba en 44100
@@ -46,32 +49,41 @@ void ofApp::update(){
 
 
 	if(createNewLSystem){
-		delete elloPtr;
 		float tempRand = ofRandom(1);	
 		if(tempRand < 0.25) { globalRule = "F+F-F+F";}
 		else if(tempRand > 0.25 && tempRand < 0.50) { globalRule = "F+F-F+F";}
 		else if(tempRand > 0.50 && tempRand < 0.75) { globalRule = "-F+F";}
 		else if(tempRand > 0.75) { globalRule = "-F-F-F+F";}
 		glm::vec3 strt(0.0,0.0,-1.0);
-		elloPtr = new Lsystem(); //"F", "-F-F-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt);
 		float randomDistance = ofRandom(20.0) + 15.0;
-		//elloPtr->setup("F", globalRule, 35.0, ofRandom(2)* 1.0 * PI/2.0, 35.0, strt); // agregue angulo random
-		//elloPtr->setup("F", "-F-F-F+F", 35.0, 1.0 * PI/2.0, 35.0, strt);
 		int randomSimulateValue = 3 + (int) ofRandom(4);
 		elloPtr->setup("F", globalRule, randomDistance, ofRandom(2)* 1.0 * PI/2.0, randomDistance, strt, randomSimulateValue); // agregue angulo random
-		//elloPtr->simulate(randomSimulateValue);	
-		elloPtr->mapProductionToTurtleSteps();
-		elloPtr->lSysActualStateToGenome();
+		//elloPtr->lSysActualStateToGenome();
 		int tempStepsNumber = elloPtr->getNumberOfSteps();
 		int tempResize = tempStepsNumber <= MAX_TABOSC_SIZE ? tempStepsNumber : MAX_TABOSC_SIZE;
-		cout << tempResize << endl;
 		waveTableX.clear();
 		waveTableX.resize(tempResize);
 		waveTableY.clear();
 		waveTableY.resize(tempResize);
 		output = elloPtr->toString();
-		genomeOutput = elloPtr->lSysActualStateToString();
+		//genomeOutput = elloPtr->lSysActualStateToString();
 		createNewLSystem = false;
+	}
+	if(saveGenome){
+		elloPtr->lSysActualStateToPreviousGenome();
+		//output = elloPtr->lSysPreviousStateToString();
+		saveGenome = false;
+	}
+	if(createLSystemFromGenome){
+		elloPtr->setLSystemWithPreviousGenome();
+		output = elloPtr->lSysPreviousStateToString();
+		int tempStepsNumber = elloPtr->getNumberOfSteps();
+		int tempResize = tempStepsNumber <= MAX_TABOSC_SIZE ? tempStepsNumber : MAX_TABOSC_SIZE;
+		waveTableX.clear();
+		waveTableX.resize(tempResize);
+		waveTableY.clear();
+		waveTableY.resize(tempResize);
+		createLSystemFromGenome = false;
 	}
 
 
@@ -153,8 +165,8 @@ void ofApp::draw(){
 	vinnie.draw();
 	ofPopMatrix();
 	
-	//ofDrawBitmapString(output, ofGetWidth()/2 -200,ofGetHeight()/2 - 100);
-	ofDrawBitmapString(genomeOutput, ofGetWidth()/2 -200,ofGetHeight()/2 - 100);
+	ofDrawBitmapString(output, ofGetWidth()/2 -200,ofGetHeight()/2 - 100);
+	//ofDrawBitmapString(genomeOutput, ofGetWidth()/2 -200,ofGetHeight()/2 - 100);
 
 }
 
@@ -166,6 +178,13 @@ void ofApp::keyPressed(int key){
 	if(key == 'r'){
 		createNewLSystem = true;
 		updateWaveTable = true;
+	}
+	if(key == 'g'){
+		createLSystemFromGenome = true;
+		updateWaveTable = true;
+	}
+	if(key == 's'){
+		saveGenome = true;
 	}
 	else{
 		cout << "Press r tu update wavetable " << endl;

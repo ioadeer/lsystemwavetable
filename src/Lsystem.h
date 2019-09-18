@@ -20,6 +20,8 @@ class Lsystem{
 		Lsystem();
 		~Lsystem();
 		void setup(string _axiom, string _rule, float _startLength, float _theta, float distance, glm::vec3 _startPoint, int _numberOfIterations);
+		void setLSystemWithGenome(Genome _genome);
+		void setLSystemWithPreviousGenome();
 		int	getAge(){return generations;};
 		void simulate(int _gen);
 		//string iterate(string & _prod, const string &  _rule);
@@ -35,8 +37,16 @@ class Lsystem{
 
 		void lSysToGenome(Genome &_genome);
 		void lSysActualStateToGenome();
+		void lSysActualStateToPreviousGenome();
 		string genomeToString(Genome _genome);
 		string lSysActualStateToString();
+		string lSysPreviousStateToString();
+
+		void evolveGenome(Genome &_genome);
+		void modifyRule(Genome &_genome);
+		void modifyTheta(Genome &_genome);
+		void modifyDistance(Genome &_genome);
+		void modifyNumberOfIterations(Genome &_genome);
 
 	private:
 		int steps =0;

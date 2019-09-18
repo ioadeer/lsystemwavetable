@@ -61,6 +61,9 @@ class ofApp : public ofBaseApp{
 
 		bool updateWaveTable;	
 		bool createNewLSystem;
+		bool createLSystemFromGenome;
+		bool saveGenome;
+
 		string globalRule;
 		string output;
 		string genomeOutput;

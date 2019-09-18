@@ -28,8 +28,22 @@ void Lsystem::setup(string _axiom, string _rule, float _startLength, float _thet
 	generations = 0;
 	numberOfIterations = _numberOfIterations;
 	simulate(numberOfIterations);
+	mapProductionToTurtleSteps();
 };
 
+void Lsystem::setLSystemWithGenome(Genome _genome){
+	this->axiom = _genome.genAxiom;
+	this->rule = _genome.genRule;
+	this->distance = _genome.genDistance;
+	this->theta = _genome.genTheta;
+	this->numberOfIterations = _genome.genNumberOfIterations;
+	simulate(numberOfIterations);
+	mapProductionToTurtleSteps();
+}
+
+void Lsystem::setLSystemWithPreviousGenome(){
+	setLSystemWithGenome(previousState);
+}
 
 void Lsystem::iterate(string & _prod, const string & _rule){
 	generations++;
@@ -53,7 +67,7 @@ string Lsystem::getProduction(){
 
 void Lsystem::mapProductionToTurtleSteps(){
 	float size = getNumberOfSteps();
-	//lSystemVecs.clear();
+	lSystemVecs.clear();
 	lSystemVecs.resize(size);
 	cout << "Size of vec :" <<  lSystemVecs.size() << endl;
 	if(lSystemVecs.size() > production.size()){
@@ -171,13 +185,6 @@ int Lsystem::getNumberOfSteps(){
 	return numberOfSteps;
 }
 
-void Lsystem::showAllValues(){
-	cout <<"Axiom :"<< this->axiom <<endl;
-	cout <<"Rule:"<< this->production <<endl;
-	cout <<"Theta:"<< this->theta <<endl;
-
-}
-
 string Lsystem::toString(){
 	string output;
 	output.append("L-system");
@@ -227,8 +234,40 @@ void Lsystem::lSysActualStateToGenome(){
 	lSysToGenome(actualState);
 }
 
+void Lsystem::lSysActualStateToPreviousGenome(){
+	lSysToGenome(previousState);
+}
+
 string Lsystem::lSysActualStateToString(){
 	string output = genomeToString(actualState);
 	return output;
+};
+
+string Lsystem::lSysPreviousStateToString(){
+	string output = genomeToString(previousState);
+	return output;
+};
+
+void Lsystem::evolveGenome(Genome &_genome){
+	float randNumber = ofRandom(1);
+	if(randNumber > 0.75) {modifyRule(_genome);}
+	if(randNumber < 0.75 && randNumber > 0.5) {modifyTheta(_genome);}
+	if(randNumber < 0.5 && randNumber > 0.25) {modifyDistance(_genome);}
+	if(randNumber < 0.25) {modifyNumberOfIterations(_genome);}
 }
 
+void Lsystem::modifyRule(Genome &_genome){
+
+}
+
+void Lsystem::modifyTheta(Genome &_genome){
+
+}
+
+void Lsystem::modifyDistance(Genome &_genome){
+	_genome.genDistance = _genome.genDistance + ofRandom(-1,1);
+}
+
+void Lsystem::modifyNumberOfIterations(Genome &_genome){
+
+}
