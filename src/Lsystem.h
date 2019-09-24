@@ -22,6 +22,7 @@ class Lsystem{
 		void setup(string _axiom, string _rule, float _startLength, float _theta, float distance, glm::vec3 _startPoint, int _numberOfIterations);
 		void setLSystemWithGenome(Genome _genome);
 		void setLSystemWithPreviousGenome();
+		void setLSystemWithActualGenome();
 		int	getAge(){return generations;};
 		void simulate(int _gen);
 		//string iterate(string & _prod, const string &  _rule);
@@ -47,6 +48,14 @@ class Lsystem{
 		void modifyTheta(Genome &_genome);
 		void modifyDistance(Genome &_genome);
 		void modifyNumberOfIterations(Genome &_genome);
+
+		int countStepsOnRule(string _rule);
+		int countDirectionsOnRule(string _rule);
+		void assignStepOnDirection(string &_rule);
+		void assignDirectionOnStep(string &_rule); 
+		void changeStepOrDirectionRandomly(string &_rule);
+		void evolveLSystemSavePreviousState();
+		void evolveLSystem();
 
 	private:
 		int steps =0;

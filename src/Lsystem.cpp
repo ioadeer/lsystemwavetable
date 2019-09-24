@@ -12,7 +12,7 @@ Lsystem::Lsystem(){
 	productionLookUpOffset = 0;
 };
 
-Lsystem::~Lsystem(){ cout << " Class destroyed"<<endl;};
+Lsystem::~Lsystem(){};
 
 void Lsystem::setup(string _axiom, string _rule, float _startLength, float _theta, float _distance, glm::vec3  _startPoint, int _numberOfIterations){
 	this->axiom = _axiom;
@@ -45,6 +45,10 @@ void Lsystem::setLSystemWithPreviousGenome(){
 	setLSystemWithGenome(previousState);
 }
 
+void Lsystem::setLSystemWithActualGenome(){
+	setLSystemWithGenome(actualState);
+}
+
 void Lsystem::iterate(string & _prod, const string & _rule){
 	generations++;
 	utils::replaceAll(_prod, "F", _rule);
@@ -66,7 +70,7 @@ string Lsystem::getProduction(){
 // update usande vector de glm vecs internos de la clase
 
 void Lsystem::mapProductionToTurtleSteps(){
-	float size = getNumberOfSteps();
+	int size = getNumberOfSteps();
 	lSystemVecs.clear();
 	lSystemVecs.resize(size);
 	cout << "Size of vec :" <<  lSystemVecs.size() << endl;
@@ -256,12 +260,76 @@ void Lsystem::evolveGenome(Genome &_genome){
 	if(randNumber < 0.25) {modifyNumberOfIterations(_genome);}
 }
 
-void Lsystem::modifyRule(Genome &_genome){
+int Lsystem::countStepsOnRule(string _rule){
+	int numberOfStepsOnRule = 0;
+	for(size_t i = 0; i < _rule.length(); i++){
+		if(_rule[i] == 'F') { numberOfStepsOnRule++;}
+	}
+	return numberOfStepsOnRule;
+}
 
+int Lsystem::countDirectionsOnRule(string _rule){
+	int numberOfDirectionsOnRule= 0;
+	for(size_t i = 0; i < _rule.length(); i++){
+		if(_rule[i] == '-' || _rule[i] == '+') { numberOfDirectionsOnRule++;}
+	}
+	return numberOfDirectionsOnRule;
+}
+
+void Lsystem::assignStepOnDirection(string &_rule){
+	size_t steps = _rule.length();
+	size_t randomNumberFromTotalSteps = floor(ofRandom(steps));	
+	//char replace = 'F';
+	char replacement;
+	replacement = 'F';
+	//char replace
+	// elijo una posicion random en la regla pero que sea de un step 
+	while(_rule[randomNumberFromTotalSteps]== 'F'){
+		randomNumberFromTotalSteps = ceil(ofRandom(steps));
+	}
+	_rule.replace(randomNumberFromTotalSteps,1,1,replacement);
+}
+
+void Lsystem::changeStepOrDirectionRandomly(string &_rule){
+	size_t steps = _rule.length();
+	size_t randomNumberFromTotalSteps = floor(ofRandom(steps));	
+	char replace;
+	float randNum = ofRandom(1);
+	if(randNum > 0.6) { replace = 'F';}
+	else if (randNum > 0.3 && randNum < 0.6) { replace = '+';}
+	else if(randNum < 0.3) { replace = '-';}
+	_rule.replace(randomNumberFromTotalSteps,1,1,replace);
+}
+
+void Lsystem::assignDirectionOnStep(string &_rule){
+	int steps = countStepsOnRule(_rule);
+	int randomNumberFromTotalSteps = ceil(ofRandom(steps));	
+	char step = 'F';
+	char replace;
+	replace = ofRandom(1) > 0.5 ? '+' : '-';
+	size_t start_pos = 0;
+	while(start_pos < steps &&  _rule.find(step, start_pos) != string::npos && 
+			randomNumberFromTotalSteps > 0){
+		start_pos++; // = _rule.find(step, start_pos);
+		randomNumberFromTotalSteps--;
+	}
+	_rule.replace(start_pos,1,1,replace);
+}
+
+void Lsystem::modifyRule(Genome &_genome){
+	//50 a 50 que vaya a step o a direction
+	float randNum = ofRandom(1);
+	if(randNum > 0.6){
+		assignStepOnDirection(_genome.genRule);
+	} else if ( randNum > 0.3 && randNum < 0.6){
+		changeStepOrDirectionRandomly(_genome.genRule);
+	} else if (randNum < 0.3){
+		assignDirectionOnStep(_genome.genRule);
+	}
 }
 
 void Lsystem::modifyTheta(Genome &_genome){
-
+	_genome.genTheta += ofRandom(-PI, PI);
 }
 
 void Lsystem::modifyDistance(Genome &_genome){
@@ -269,5 +337,16 @@ void Lsystem::modifyDistance(Genome &_genome){
 }
 
 void Lsystem::modifyNumberOfIterations(Genome &_genome){
+		while(_genome.genNumberOfIterations < 3 && _genome.genNumberOfIterations > 8){
+			_genome.genNumberOfIterations += (int) ceil(ofRandom(4));
+		}
+};
 
+void Lsystem::evolveLSystem(){
+	evolveGenome(actualState);
+}
+
+void Lsystem::evolveLSystemSavePreviousState(){
+	previousState = actualState;
+	evolveGenome(actualState);
 }
