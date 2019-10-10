@@ -1,4 +1,7 @@
-break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:294
-break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:305
-break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:320
-break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/ofApp.cpp:87
+# break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:40
+break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:267
+break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:330
+break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:315
+# break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:60
+# break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/Lsystem.cpp:320
+# break /home/joaquin/of_sketches/Lindenmayer/test_1_sound/src/ofApp.cpp:87

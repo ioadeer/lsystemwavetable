@@ -83,8 +83,8 @@ void ofApp::update(){
 	}
 	if(createLSystemFromGenome){
 		elloPtr->setLSystemWithActualGenome();
-		output = elloPtr->lSysActualStateToString();
 		int tempStepsNumber = elloPtr->getNumberOfSteps();
+		output = elloPtr->lSysActualStateToString();
 		int tempResize = tempStepsNumber <= MAX_TABOSC_SIZE ? tempStepsNumber : MAX_TABOSC_SIZE;
 		waveTableX.clear();
 		waveTableX.resize(tempResize);

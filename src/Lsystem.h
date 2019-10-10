@@ -25,6 +25,7 @@ class Lsystem{
 		void setLSystemWithActualGenome();
 		int	getAge(){return generations;};
 		void simulate(int _gen);
+		void simulateUpdateProcution(int _gen, string _rule);
 		//string iterate(string & _prod, const string &  _rule);
 		void iterate(string & _prod, const string &  _rule);
 		string getProduction();

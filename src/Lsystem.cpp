@@ -32,12 +32,15 @@ void Lsystem::setup(string _axiom, string _rule, float _startLength, float _thet
 };
 
 void Lsystem::setLSystemWithGenome(Genome _genome){
-	this->axiom = _genome.genAxiom;
-	this->rule = _genome.genRule;
-	this->distance = _genome.genDistance;
-	this->theta = _genome.genTheta;
-	this->numberOfIterations = _genome.genNumberOfIterations;
+	axiom = _genome.genAxiom;
+	rule = _genome.genRule;
+	distance = _genome.genDistance;
+	theta = _genome.genTheta;
+	numberOfIterations = _genome.genNumberOfIterations;
+	generations = 0;
+	production = axiom;
 	simulate(numberOfIterations);
+	//simulateUpdateProcution(numberOfIterations, rule);
 	mapProductionToTurtleSteps();
 }
 
@@ -56,8 +59,15 @@ void Lsystem::iterate(string & _prod, const string & _rule){
 
 void Lsystem::simulate(int _gen){
 	//numberOfIterations = _gen;
+	//production.clear();
 	while(getAge() < _gen){
 		iterate(production, rule);
+	}
+};
+
+void Lsystem::simulateUpdateProcution(int _gen, string _rule){
+	while(getAge() < _gen){
+		iterate(production, _rule);
 	}
 };
 
@@ -222,6 +232,7 @@ string Lsystem::genomeToString(Genome _genome){
 	string axiomString = "\nAxiom " + _genome.genAxiom;
 	string ruleString = "\nRule " + _genome.genRule;
 	string thetaString = "\nTheta " + to_string(_genome.genTheta);
+	_genome.genNumberOfSteps=  numberOfSteps;
 	string numberStepsString = "\nNumber of steps : " + to_string(_genome.genNumberOfSteps);
 	string distanceString = "\nDistance : " + to_string(_genome.genDistance);
 	string numberOfIterationsString = "\nNumber of iterations : " + to_string(_genome.genNumberOfIterations);
@@ -253,7 +264,7 @@ string Lsystem::lSysPreviousStateToString(){
 };
 
 void Lsystem::evolveGenome(Genome &_genome){
-	float randNumber = ofRandom(1);
+	float randNumber = ofRandom(1.0);
 	if(randNumber > 0.75) {modifyRule(_genome);}
 	if(randNumber < 0.75 && randNumber > 0.5) {modifyTheta(_genome);}
 	if(randNumber < 0.5 && randNumber > 0.25) {modifyDistance(_genome);}
@@ -319,12 +330,21 @@ void Lsystem::assignDirectionOnStep(string &_rule){
 void Lsystem::modifyRule(Genome &_genome){
 	//50 a 50 que vaya a step o a direction
 	float randNum = ofRandom(1);
-	if(randNum > 0.6){
-		assignStepOnDirection(_genome.genRule);
-	} else if ( randNum > 0.3 && randNum < 0.6){
-		changeStepOrDirectionRandomly(_genome.genRule);
-	} else if (randNum < 0.3){
-		assignDirectionOnStep(_genome.genRule);
+	//if(randNum > 0.5){
+	if(true){
+		if(countStepsOnRule(_genome.genRule) > 4){
+			assignDirectionOnStep(_genome.genRule);
+		} else {
+			assignStepOnDirection(_genome.genRule);
+		}
+	//} else if ( randNum > 0.3 && randNum < 0.6){
+		//changeStepOrDirectionRandomly(_genome.genRule);
+	//} else if (randNum < 0.5){
+	//	if(countStepsOnRule(_genome.genRule) < 3){
+	//		assignDirectionOnStep(_genome.genRule);
+	//	} else {
+	//		assignStepOnDirection(_genome.genRule);
+	//	}
 	}
 }
 
@@ -337,9 +357,10 @@ void Lsystem::modifyDistance(Genome &_genome){
 }
 
 void Lsystem::modifyNumberOfIterations(Genome &_genome){
-		while(_genome.genNumberOfIterations < 3 && _genome.genNumberOfIterations > 8){
-			_genome.genNumberOfIterations += (int) ceil(ofRandom(4));
-		}
+		//while(_genome.genNumberOfIterations < 3 && _genome.genNumberOfIterations > 8){
+		//	_genome.genNumberOfIterations += (int) ceil(ofRandom(4));
+		//}
+		_genome.genNumberOfIterations = 3 + (int) floor(ofRandom(3));
 };
 
 void Lsystem::evolveLSystem(){
