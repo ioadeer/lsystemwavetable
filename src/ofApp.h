@@ -69,6 +69,7 @@ class ofApp : public ofBaseApp{
 		string globalRule;
 		string output;
 		string genomeOutput;
+		string controls;
 
 		std::mutex audioMutex;
     ofSoundStream soundStream;

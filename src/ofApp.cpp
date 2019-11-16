@@ -36,6 +36,13 @@ void ofApp::setup(){
 	saveGenome = false;
 	createLSystemFromPreviousGenome = false;
 
+	controls = "CONTROLS"
+	 	"\n Press 'r' to create new L-system"
+		"\n Press 'a' to update wavetable"
+		"\n Press 'e' to evolve L-system"
+		"\n Press 's' to save L-system"
+		"\n Press 'g' to create L-system from previous saved state";
+
 	ofSoundStreamSettings settings;
   settings.numOutputChannels = 2;
   settings.sampleRate = 48000; // antes estaba en 44100
@@ -185,7 +192,7 @@ void ofApp::draw(){
 	
 	ofDrawBitmapString(output, ofGetWidth()/2 -200,ofGetHeight()/2 - 100);
 	//ofDrawBitmapString(genomeOutput, ofGetWidth()/2 -200,ofGetHeight()/2 - 100);
-
+	ofDrawBitmapString(controls,-ofGetWidth()/2+280,ofGetHeight()/2 - 88);
 }
 
 //--------------------------------------------------------------
