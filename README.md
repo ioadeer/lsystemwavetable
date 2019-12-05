@@ -4,7 +4,7 @@ This sketch was developed in order to explore an experimental practice of waveta
 
 ## Process
 
-	The sketch maps the projection on the x and y axis of the graphic representation of a DOL-system to two wavetables, as a means of sonification.
+The sketch maps the projection on the x and y axis of the graphic representation of a DOL-system to two wavetables, as a means of sonification.
 
  [![VIDEO](https://img.youtube.com/vi/uvSoMslFnkg/0.jpg)](https://youtu.be/uvSoMslFnkg)
 
